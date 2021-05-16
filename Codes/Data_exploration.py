@@ -1,25 +1,12 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[3]:
-
-
-import os
-os.getcwd()
-
-
-# In[71]:
-
-
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
  
 from scipy.stats import pearsonr
-
-
-# In[6]:
 
 
 # Select columns having less than 20% of missing values.
@@ -34,17 +21,11 @@ train_selected.isnull().sum()
 # has 7364 missing values.
 
 
-# In[9]:
-
-
 # Create a dataframe containing all the samples with Null prop_review_score
 review_score_null = train_selected[train_selected.prop_review_score.isnull()]
 
 # Drop rows with NaN in 'prop_review_score' column:
 train_selected_2 = train_selected.dropna()
-
-
-# In[22]:
 
 
 # Randomly choose the same number of samples with 'click_bool == 0' as 'click_bool == 1'
@@ -62,9 +43,6 @@ train_selected_short = train_selected_short.sort_values(by = ['srch_id','click_b
 train_selected_short = train_selected_short.reset_index(drop=True)
 
 
-# In[23]:
-
-
 # Label training data with 0,1 or 5.
 train_selected_short['label'] = ""
 for row in range(train_selected_short.shape[0]):
@@ -78,14 +56,8 @@ for row in range(train_selected_short.shape[0]):
 train_selected_short['label'].value_counts()
 
 
-# In[24]:
-
-
-train_selected_short = train_selected_short.drop(columns =
-                                                 ['random_bool','click_bool','booking_bool'])
-
-
-# In[17]:
+train_selected_short = train_selected_short.drop(columns = ['random_bool','click_bool','booking_bool'])
+ 
 
 
 # Finding common columns in training and testing sets.
@@ -94,17 +66,11 @@ test_col = test.columns
 common_col = train_col.intersection(test_col)
 
 
-# In[25]:
-
-
 # train_selected_short and test sets only containing common_col
 label = train_selected_short.label
 train_selected_short = train_selected_short[common_col]
 train_selected_short = train_selected_short.assign(label = label)
 test_selected = test[common_col]
-
-
-# In[53]:
 
 
 ## Define a fuction to extract year, month and day from 'date_time'
@@ -132,15 +98,9 @@ test_selected = test[common_col]
 #     dataframe['day'] = [int(i) for i in dataframe['day']]
 
 
-# In[65]:
-
-
 # Heatmap to illustrate correlations between features/columns
 train_selected_short = train_selected_short.drop(columns='date_time')
 test_selected = test_selected.drop(columns='date_time')
-
-
-# In[77]:
 
 
 # Calculating correlations between features/columns in training set
@@ -157,9 +117,6 @@ for row_num in range(nColumns):
                                                     train_selected_short.loc[:,columns[col_num]])[0]
 
 
-# In[86]:
-
-
 # Heatmap to illustrate correlations between features/columns in training set
 ax = plt.figure(figsize=(11,9))
 ax = sns.heatmap(pearson_r, yticklabels=columns, vmin=-1, vmax=1,
@@ -173,18 +130,12 @@ ax.set_title('PCC - Pearson correlation coefficient', fontsize = 15)
 plt.show()
 
 
-# In[87]:
-
-
 # combine 'srch_adults_count' and 'srch_children_count' into 'people_count'
 # and check its correlation with 'srch_room_count'.
 people_count = train_selected_short.srch_adults_count + train_selected_short.srch_children_count
 room_count = train_selected_short.srch_room_count
 r_people_room = pearsonr(people_count,room_count)[0]
 print(r_people_room) # 0.42
-
-
-# In[88]:
 
 
 # Export the training and test sets
